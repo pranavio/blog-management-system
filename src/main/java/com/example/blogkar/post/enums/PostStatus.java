@@ -1,6 +1,6 @@
 package com.example.blogkar.post.enums;
 
-public enum Status {
+public enum PostStatus {
     PUBLISHED,
     DRAFT,
     ARCHIVED

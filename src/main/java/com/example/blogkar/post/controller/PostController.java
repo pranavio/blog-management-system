@@ -1,15 +1,18 @@
 package com.example.blogkar.post.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.blogkar.post.dto.CreatePostRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
-    @GetMapping
-    public String getAllProducts() {
-        return "here you can get your all post";
-    }
 
+    @PostMapping
+    public ResponseEntity<String> createPost(
+            @RequestBody @Valid CreatePostRequest request) {
+
+        return ResponseEntity.ok("Post Created Successfully");
+    }
 }

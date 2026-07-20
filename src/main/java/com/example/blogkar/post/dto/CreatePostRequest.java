@@ -13,7 +13,7 @@ public class CreatePostRequest {
         @Valid
         private String content;
         @NotNull(message = "Category is required.")
-        private Integer  categoryId;
+        private long  categoryId;
         private String coverImageUrl;
     public CreatePostRequest() {
     }
@@ -34,11 +34,11 @@ public class CreatePostRequest {
         this.content = content;
     }
 
-    public Integer getCategoryId() {
+    public long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Integer categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 

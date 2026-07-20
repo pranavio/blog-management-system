@@ -1,4 +1,4 @@
-package com.example.blogkar.auth.controller;
+package com.example.blogkar.auth.controlller;
 
 import com.example.blogkar.auth.dto.AuthenticationResponse;
 import com.example.blogkar.auth.dto.LoginRequest;

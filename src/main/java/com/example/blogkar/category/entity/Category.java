@@ -2,6 +2,7 @@ package com.example.blogkar.category.entity;
 
 import com.example.blogkar.post.entity.Post;
 import jakarta.persistence.*;
+import org.hibernate.Interceptor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 

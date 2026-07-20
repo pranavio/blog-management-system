@@ -1,16 +1,14 @@
 package com.example.blogkar.user.mapper;
 
-import com.example.blogkar.user.dto.response.LoginResponse;
 import com.example.blogkar.user.dto.response.UserResponse;
 import com.example.blogkar.user.entity.User;
-import com.example.blogkar.user.enums.Role;
 import org.springframework.stereotype.Component;
 
-import com.example.blogkar.user.dto.request.RegisterUserRequest;
+import com.example.blogkar.user.dto.request.RegisterRequest;
 
 @Component
 public class UserMapper {
-    public User toEntity(RegisterUserRequest request){
+    public User toEntity(RegisterRequest request){
         User user = new User();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());

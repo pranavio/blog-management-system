@@ -4,7 +4,7 @@ import com.example.blogkar.exception.EmailAlreadyExistsException;
 import com.example.blogkar.exception.InvalidCredentialsException;
 import com.example.blogkar.security.JwtService;
 import com.example.blogkar.user.dto.request.LoginRequest;
-import com.example.blogkar.user.dto.request.RegisterUserRequest;
+import com.example.blogkar.user.dto.request.RegisterRequest;
 import com.example.blogkar.user.dto.response.LoginResponse;
 import com.example.blogkar.user.dto.response.UserResponse;
 import com.example.blogkar.user.entity.User;
@@ -30,7 +30,7 @@ public class UserService {
         this.jwtService = jwtService;
 
     }
-    public UserResponse register(RegisterUserRequest request){
+    public UserResponse register(RegisterRequest request){
         if(userRepository.existsByEmail(request.getEmail())){
             throw new EmailAlreadyExistsException("Email already exists.");
         }

@@ -1,8 +1,11 @@
 package com.example.blogkar.auth.service;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import com.example.blogkar.auth.dto.AuthenticationResponse;
 import com.example.blogkar.auth.dto.LoginRequest;
 import com.example.blogkar.auth.dto.RegisterRequest;
+import com.example.blogkar.exception.EmailAlreadyExistsException;
+import com.example.blogkar.exception.InvalidCredentialsException;
 import com.example.blogkar.security.JwtService;
 import com.example.blogkar.user.enums.Role;
 import com.example.blogkar.user.entity.User;
@@ -22,8 +25,11 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
 
+    public AuthenticationResponse register(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
         User user = new User();
 
         user.setFullName(request.getFullName());
@@ -39,18 +45,22 @@ public class AuthenticationService {
                 .token(jwtToken)
                 .build();
     }
-
     public AuthenticationResponse login(LoginRequest request) {
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() ->
+                        new InvalidCredentialsException("Invalid email or password"));
 
         String jwtToken = jwtService.generateToken(user);
 

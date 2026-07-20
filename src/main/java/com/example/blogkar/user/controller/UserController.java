@@ -1,7 +1,7 @@
 package com.example.blogkar.user.controller;
 
 import com.example.blogkar.user.dto.request.LoginRequest;
-import com.example.blogkar.user.dto.request.RegisterUserRequest;
+import com.example.blogkar.user.dto.request.RegisterRequest;
 import com.example.blogkar.user.dto.response.LoginResponse;
 import com.example.blogkar.user.dto.response.UserResponse;
 import com.example.blogkar.user.service.UserService;
@@ -23,7 +23,7 @@ public class UserController {
     }
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(
-           @Valid @RequestBody RegisterUserRequest request){
+           @Valid @RequestBody RegisterRequest request){
 
         UserResponse response = userService.register(request);
 

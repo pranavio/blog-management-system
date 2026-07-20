@@ -10,10 +10,9 @@ public class CreatePostRequest {
         @Size(min  = 5, max = 100, message = "Title must be between 5 and 100 character.")
         private String title;
         @NotBlank(message = "Content is required.")
-        @Valid
         private String content;
         @NotNull(message = "Category is required.")
-        private long  categoryId;
+        private Integer  categoryId;
         private String coverImageUrl;
     public CreatePostRequest() {
     }
@@ -34,11 +33,11 @@ public class CreatePostRequest {
         this.content = content;
     }
 
-    public long getCategoryId() {
+    public Integer getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 

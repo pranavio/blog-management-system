@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService {
                         new UsernameNotFoundException("User not found."));
     }
 
-    private Category getCategory(Long categoryId) {
+    private Category getCategory(Integer categoryId) {
 
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() ->

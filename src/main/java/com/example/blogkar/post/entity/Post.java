@@ -85,7 +85,7 @@ public class Post {
     // Getters
     // ===========================
 
-    public long getPostId() {
+    public Integer getPostId() {
         return postId;
     }
 

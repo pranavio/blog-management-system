@@ -35,4 +35,8 @@ public class PostController {
     ){
         return ResponseEntity.ok(postService.getAllPosts(page, size));
     }
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponse> getPostById(@PathVariable("postId") Integer postId) {
+        return ResponseEntity.ok(postService.getPostById(postId));
+    }
 }

@@ -12,6 +12,9 @@ import com.example.blogkar.user.entity.User;
 import com.example.blogkar.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +28,12 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
-
+    @Override
+    public Page<PostResponse> getAllPosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findAll(pageable);
+    return posts.map(postMapper::toResponse);
+    }
     @Override
     @Transactional
     public PostResponse createPost(CreatePostRequest request) {
@@ -86,6 +94,8 @@ public class PostServiceImpl implements PostService {
 
         return slug;
     }
+
+
 
     private Post savePost(Post post) {
         return postRepository.save(post);

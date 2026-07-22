@@ -12,5 +12,5 @@ public interface PostService {
     Page<PostResponse> getAllPosts(int size, int page);
     PostResponse getPostById(Integer postId);
     PostResponse updatePost(Integer postId, CreatePostRequest request);
-
+    void deletePost(Integer postId);
 }

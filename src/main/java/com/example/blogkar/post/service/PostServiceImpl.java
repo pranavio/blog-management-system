@@ -28,6 +28,13 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
+    @Override
+    public void deletePost(Integer postId){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+       postRepository.delete(post);
+
+    }
 
     @Override
     public PostResponse updatePost(Integer postId, CreatePostRequest request){

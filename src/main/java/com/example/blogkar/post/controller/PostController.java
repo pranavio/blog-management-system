@@ -2,6 +2,7 @@ package com.example.blogkar.post.controller;
 
 import com.example.blogkar.post.dto.CreatePostRequest;
 import com.example.blogkar.post.dto.PostResponse;
+import com.example.blogkar.post.entity.Post;
 import com.example.blogkar.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,11 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponse> getPostById(@PathVariable("postId") Integer postId) {
         return ResponseEntity.ok(postService.getPostById(postId));
+    }
+    @PutMapping("/{postId}")
+    public ResponseEntity<PostResponse> updatePost(
+            @PathVariable("postId") Integer postId,
+            @RequestBody CreatePostRequest request){
+        return ResponseEntity.ok(postService.updatePost(postId, request));
     }
 }

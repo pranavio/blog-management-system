@@ -30,6 +30,19 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
 
     @Override
+    public PostResponse updatePost(Integer postId, CreatePostRequest request){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        post.setTitle(request.getTitle());
+        post.setContent(request.getContent());
+        post.setCategory(category);
+        Post updatedPost = postRepository.save(post);
+        return postMapper.toResponse(updatedPost);
+    }
+
+    @Override
     public PostResponse getPostById(Integer postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));

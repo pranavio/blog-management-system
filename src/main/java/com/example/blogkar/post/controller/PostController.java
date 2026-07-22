@@ -53,4 +53,13 @@ public class PostController {
         postService.deletePost(postId);
         return ResponseEntity.ok("Post deleted successfully.");
     }
+    @GetMapping("/search")
+    public ResponseEntity<Page<PostResponse>> searchPosts(
+            @RequestParam String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+
+       return ResponseEntity.ok(postService.searchPosts(title, page, size));
+    }
 }

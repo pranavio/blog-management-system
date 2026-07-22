@@ -29,6 +29,12 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final PostMapper postMapper;
     @Override
+    public Page<PostResponse> searchPosts(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findByTitleContainingIgnoreCase(title, pageable);
+        return posts.map(postMapper::toResponse);
+    }
+    @Override
     public void deletePost(Integer postId){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));

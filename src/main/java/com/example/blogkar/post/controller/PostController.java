@@ -62,4 +62,12 @@ public class PostController {
 
        return ResponseEntity.ok(postService.searchPosts(title, page, size));
     }
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<Page<PostResponse>> getPostsByCategory(
+            @PathVariable Integer categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        return ResponseEntity.ok(postService.getPostsByCategory(categoryId, page,size));
+    }
 }

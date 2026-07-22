@@ -9,4 +9,5 @@ public interface PostRepository extends JpaRepository<Post, Integer
         > {
     boolean existsBySlug(String slug);
     Page<Post> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    Page<Post> findByCategory_CategoryId(Integer categoryId, Pageable pageable);
 }

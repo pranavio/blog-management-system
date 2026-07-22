@@ -29,6 +29,16 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final PostMapper postMapper;
     @Override
+    public Page<PostResponse> getPostsByCategory(Integer categoryId, int page, int size){
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new ResourceNotFoundException("Category not found");
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.findByCategory_CategoryId(categoryId,pageable);
+
+        return posts.map(postMapper::toResponse);
+    }
+    @Override
     public Page<PostResponse> searchPosts(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findByTitleContainingIgnoreCase(title, pageable);

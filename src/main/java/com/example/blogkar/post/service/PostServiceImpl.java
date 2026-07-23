@@ -8,6 +8,7 @@ import com.example.blogkar.post.dto.PostResponse;
 import com.example.blogkar.post.entity.Post;
 import com.example.blogkar.post.mapper.PostMapper;
 import com.example.blogkar.post.repository.PostRepository;
+import com.example.blogkar.security.CustomUserDetails;
 import com.example.blogkar.user.entity.User;
 import com.example.blogkar.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,23 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
+    @Override
+    public Page<PostResponse> getMyPosts(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User user = userDetails.getUser();
+
+        Page<Post> posts = postRepository.findByUser(user, pageable);
+
+        return posts.map(postMapper::toResponse);
+    }
     @Override
     public Page<PostResponse> getPostsByCategory(Integer categoryId, int page, int size){
         if (!categoryRepository.existsById(categoryId)) {

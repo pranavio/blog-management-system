@@ -10,7 +10,12 @@ import com.example.blogkar.post.entity.Post;
 import com.example.blogkar.post.repository.PostRepository;
 import com.example.blogkar.security.CustomUserDetails;
 import com.example.blogkar.user.entity.User;
+import com.example.blogkar.user.enums.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,6 +26,50 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final CommentMapper commentMapper;
+    @Override
+    public CommentResponse updateComment(
+            Integer commentId,
+            CreateCommentRequest request) {
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Comment not found"));
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User loggedInUser = userDetails.getUser();
+        if (loggedInUser.getRole() != Role.ADMIN) {
+
+            if (!loggedInUser.getUserId()
+                    .equals(comment.getUser().getUserId())) {
+
+                throw new AccessDeniedException(
+                        "You are not allowed to update this comment");
+            }
+        }
+        comment.setMessage(request.getMessage());
+
+        Comment updatedComment = commentRepository.save(comment);
+
+        return commentMapper.toResponse(updatedComment);
+
+    }
+    @Override
+    public Page<CommentResponse> getCommentsByPost(
+            Integer postId,
+            int page,
+            int size) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Comment> comments =
+                commentRepository.findByPost_PostId(postId, pageable);
+        return comments.map(commentMapper::toResponse);
+    }
     @Override
     public CommentResponse createComment(CreateCommentRequest request) {
 
@@ -39,6 +88,35 @@ public class CommentServiceImpl implements CommentService {
         Comment savedComment = commentRepository.save(comment);
 
         return commentMapper.toResponse(savedComment);
+    }
+    @Override
+    public void deleteComment(Integer commentId) {
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Comment not found"));
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User loggedInUser = userDetails.getUser();
+
+        // Admin can delete any comment
+        if (loggedInUser.getRole() != Role.ADMIN) {
+
+            // Owner can delete only their own comment
+            if (!loggedInUser.getUserId()
+                    .equals(comment.getUser().getUserId())) {
+
+                throw new AccessDeniedException(
+                        "You are not allowed to delete this comment");
+            }
+        }
+
+        commentRepository.delete(comment);
     }
 
 }

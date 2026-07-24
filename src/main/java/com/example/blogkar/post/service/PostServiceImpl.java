@@ -1,5 +1,6 @@
 package com.example.blogkar.post.service;
 
+import ch.qos.logback.core.joran.spi.ActionException;
 import com.example.blogkar.category.entity.Category;
 import com.example.blogkar.category.repository.CategoryRepository;
 import com.example.blogkar.exception.ResourceNotFoundException;
@@ -10,6 +11,7 @@ import com.example.blogkar.post.mapper.PostMapper;
 import com.example.blogkar.post.repository.PostRepository;
 import com.example.blogkar.security.CustomUserDetails;
 import com.example.blogkar.user.entity.User;
+import com.example.blogkar.user.enums.Role;
 import com.example.blogkar.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
+import com.example.blogkar.user.enums.Role;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +70,17 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Integer postId){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User loggedInUser = userDetails.getUser();
+        if(loggedInUser.getRole() != Role.ADMIN){
+            if (loggedInUser.getUserId().equals(post.getUser().getUserId())){
+                throw new AccessDeniedException("You are not allowed to delete this post");
+            }
+        }
        postRepository.delete(post);
 
     }
@@ -74,6 +89,14 @@ public class PostServiceImpl implements PostService {
     public PostResponse updatePost(Integer postId, CreatePostRequest request){
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User loggedInUser = userDetails.getUser();
+        if (loggedInUser.getRole() != Role.ADMIN) {
+            if (loggedInUser.getUserId().equals(post.getUser().getUserId())) {
+                throw new AccessDeniedException("You are not allowed to update this post");
+            }
+        }
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         post.setTitle(request.getTitle());

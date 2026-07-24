@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
             @RequestBody @Valid CreatePostRequest request) {
@@ -40,12 +41,14 @@ public class PostController {
     public ResponseEntity<PostResponse> getPostById(@PathVariable("postId") Integer postId) {
         return ResponseEntity.ok(postService.getPostById(postId));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")
     @PutMapping("/{postId}")
     public ResponseEntity<PostResponse> updatePost(
             @PathVariable("postId") Integer postId,
             @RequestBody CreatePostRequest request){
         return ResponseEntity.ok(postService.updatePost(postId, request));
     }
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")
     @DeleteMapping("/{postId}")
     public ResponseEntity<String> deletePost(
             @PathVariable("postId") Integer postId

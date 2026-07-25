@@ -2,8 +2,10 @@ package com.example.blogkar.user.service;
 
 import com.example.blogkar.exception.EmailAlreadyExistsException;
 import com.example.blogkar.exception.InvalidCredentialsException;
+import com.example.blogkar.exception.PasswordMismatchException;
 import com.example.blogkar.security.CustomUserDetails;
 import com.example.blogkar.security.JwtService;
+import com.example.blogkar.user.dto.request.ChangePasswordRequest;
 import com.example.blogkar.user.dto.request.LoginRequest;
 import com.example.blogkar.user.dto.request.RegisterRequest;
 import com.example.blogkar.user.dto.request.UpdateProfileRequest;
@@ -87,5 +89,28 @@ public class UserService {
         user.setEmail(request.getEmail());
         User updatedUser = userRepository.save(user);
         return userMapper.toProfileResponse(updatedUser);
+    }
+    public String changePassword(ChangePasswordRequest request) {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User user = userDetails.getUser();
+        if (!passwordEncoder.matches(
+                request.getCurrentPassword(),
+                user.getPassword())) {
+
+            throw new InvalidCredentialsException("Current password is incorrect.");
+        }
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new PasswordMismatchException("New password and confirm password do not match.");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        userRepository.save(user);
+
+        return "Password changed successfully.";
     }
 }

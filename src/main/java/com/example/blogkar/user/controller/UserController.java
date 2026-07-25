@@ -1,5 +1,6 @@
 package com.example.blogkar.user.controller;
 
+import com.example.blogkar.user.dto.request.ChangePasswordRequest;
 import com.example.blogkar.user.dto.request.LoginRequest;
 import com.example.blogkar.user.dto.request.RegisterRequest;
 import com.example.blogkar.user.dto.request.UpdateProfileRequest;
@@ -48,6 +49,12 @@ public class UserController {
             @Valid @RequestBody UpdateProfileRequest request) {
 
         return ResponseEntity.ok(userService.updateProfile(request));
+    }
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request) {
+
+        return ResponseEntity.ok(userService.changePassword(request));
     }
 }
 

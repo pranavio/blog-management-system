@@ -2,15 +2,20 @@ package com.example.blogkar.user.service;
 
 import com.example.blogkar.exception.EmailAlreadyExistsException;
 import com.example.blogkar.exception.InvalidCredentialsException;
+import com.example.blogkar.security.CustomUserDetails;
 import com.example.blogkar.security.JwtService;
 import com.example.blogkar.user.dto.request.LoginRequest;
 import com.example.blogkar.user.dto.request.RegisterRequest;
+import com.example.blogkar.user.dto.request.UpdateProfileRequest;
 import com.example.blogkar.user.dto.response.LoginResponse;
+import com.example.blogkar.user.dto.response.UserProfileResponse;
 import com.example.blogkar.user.dto.response.UserResponse;
 import com.example.blogkar.user.entity.User;
 import com.example.blogkar.user.enums.Role;
 import com.example.blogkar.user.mapper.UserMapper;
 import com.example.blogkar.user.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,5 +61,31 @@ public class UserService {
                 token,
                 "Bearer"
         );
+    }
+    public UserProfileResponse getMyProfile(){
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+        return userMapper.toProfileResponse(user);
+    }
+    public UserProfileResponse updateProfile(UpdateProfileRequest request) {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User user = userDetails.getUser();
+        if (!user.getEmail().equals(request.getEmail())
+                && userRepository.existsByEmail(request.getEmail())) {
+
+            throw new EmailAlreadyExistsException("Email already exists.");
+        }
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        User updatedUser = userRepository.save(user);
+        return userMapper.toProfileResponse(updatedUser);
     }
 }

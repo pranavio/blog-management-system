@@ -22,7 +22,6 @@ public class CommentController {
     public ResponseEntity<CommentResponse> updateComment(
             @PathVariable Integer commentId,
             @RequestBody @Valid CreateCommentRequest request) {
-
         return ResponseEntity.ok(
                 commentService.updateComment(commentId, request)
         );

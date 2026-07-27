@@ -102,6 +102,7 @@ public class PostServiceImpl implements PostService {
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
         post.setCategory(category);
+        post.setCoverImageUrl(request.getCoverImageUrl());
         Post updatedPost = postRepository.save(post);
         return postMapper.toResponse(updatedPost);
     }

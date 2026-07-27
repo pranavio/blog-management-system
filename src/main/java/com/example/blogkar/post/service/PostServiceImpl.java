@@ -7,6 +7,7 @@ import com.example.blogkar.exception.ResourceNotFoundException;
 import com.example.blogkar.post.dto.CreatePostRequest;
 import com.example.blogkar.post.dto.PostResponse;
 import com.example.blogkar.post.entity.Post;
+import com.example.blogkar.post.enums.PostStatus;
 import com.example.blogkar.post.mapper.PostMapper;
 import com.example.blogkar.post.repository.PostRepository;
 import com.example.blogkar.security.CustomUserDetails;
@@ -33,6 +34,7 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
+
     @Override
     public Page<PostResponse> getMyPosts(int page, int size) {
 
@@ -84,7 +86,40 @@ public class PostServiceImpl implements PostService {
        postRepository.delete(post);
 
     }
+    @Override
+    public PostResponse publishPost(Integer postId) {
 
+        // Find the post
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Post not found"));
+
+        // Get logged-in user
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User loggedInUser = userDetails.getUser();
+
+        // Allow only ADMIN or owner of the post
+        if (loggedInUser.getRole() != Role.ADMIN &&
+                !post.getUser().getUserId().equals(loggedInUser.getUserId())) {
+
+            throw new AccessDeniedException("You are not authorized to publish this post.");
+        }
+
+        // Update status
+        post.setStatus(PostStatus.PUBLISHED);
+
+        // Save
+        Post updatedPost = postRepository.save(post);
+
+        // Return response
+        return postMapper.toResponse(updatedPost);
+    }
     @Override
     public PostResponse updatePost(Integer postId, CreatePostRequest request){
         Post post = postRepository.findById(postId)

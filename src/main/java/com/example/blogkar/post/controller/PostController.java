@@ -18,6 +18,13 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
+    @PutMapping("/{postId}/publish")
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")
+    public ResponseEntity<PostResponse> publishPost(
+            @PathVariable Integer postId) {
+
+        return ResponseEntity.ok(postService.publishPost(postId));
+    }
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")
     @PostMapping
     public ResponseEntity<PostResponse> createPost(

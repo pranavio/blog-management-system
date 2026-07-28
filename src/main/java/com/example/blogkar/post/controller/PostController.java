@@ -17,6 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PostController {
 
+    @PutMapping("/{postId}/archive")
+    @PreAuthorize("hasAnyRole('ADMIN','AUTHOR')")
+    public ResponseEntity<PostResponse> archivePost(
+            @PathVariable Integer postId) {
+
+        return ResponseEntity.ok(postService.archivePost(postId));
+    }
     private final PostService postService;
     @PutMapping("/{postId}/publish")
     @PreAuthorize("hasAnyRole('ADMIN', 'AUTHOR')")

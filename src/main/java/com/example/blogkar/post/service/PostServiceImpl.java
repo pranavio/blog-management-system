@@ -34,7 +34,40 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
+    @Override
+    public PostResponse archivePost(Integer postId) {
 
+        // Find post
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Post not found"));
+
+        // Get logged-in user
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        CustomUserDetails userDetails =
+                (CustomUserDetails) authentication.getPrincipal();
+
+        User loggedInUser = userDetails.getUser();
+
+        // Allow only ADMIN or owner
+        if (loggedInUser.getRole() != Role.ADMIN &&
+                !post.getUser().getUserId().equals(loggedInUser.getUserId())) {
+
+            throw new AccessDeniedException(
+                    "You are not authorized to archive this post.");
+        }
+
+        // Change status
+        post.setStatus(PostStatus.ARCHIVED);
+
+        // Save
+        Post updatedPost = postRepository.save(post);
+
+        return postMapper.toResponse(updatedPost);
+    }
     @Override
     public Page<PostResponse> getMyPosts(int page, int size) {
 

@@ -185,7 +185,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostResponse> getAllPosts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Post> posts = postRepository.findAll(pageable);
+        Page<Post> posts = postRepository.findByStatus(PostStatus.PUBLISHED, pageable);
     return posts.map(postMapper::toResponse);
     }
     @Override

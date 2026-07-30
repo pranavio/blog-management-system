@@ -34,6 +34,7 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
+
     @Override
     public PostResponse archivePost(Integer postId) {
 
@@ -85,6 +86,15 @@ public class PostServiceImpl implements PostService {
 
         return posts.map(postMapper::toResponse);
     }
+        @Override
+        public Page<PostResponse> getMyDraftPosts(int page, int size){
+            Pageable pageable = PageRequest.of(page, size);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            User user = userDetails.getUser();
+            Page<Post> posts = postRepository.findByUserAndStatus(user, PostStatus.DRAFT, pageable);
+            return posts.map(postMapper::toResponse);
+        };
     @Override
     public Page<PostResponse> getPostsByCategory(Integer categoryId, int page, int size){
         if (!categoryRepository.existsById(categoryId)) {

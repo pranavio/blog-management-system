@@ -16,6 +16,24 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
+    @GetMapping("/my-drafts")
+    @PreAuthorize("hasAnyRole('AUTHOR','ADMIN')")
+    public ResponseEntity<Page<PostResponse>> getMyDraftPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(
+                postService.getMyDraftPosts(page, size)
+        );
+    }
+    @GetMapping("/my-posts")
+    @PreAuthorize("hasAnyRole('AUTHOR','ADMIN')")
+    public ResponseEntity<Page<PostResponse>> getMyPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(postService.getMyPosts(page, size));
+    }
 
     @PutMapping("/{postId}/archive")
     @PreAuthorize("hasAnyRole('ADMIN','AUTHOR')")
@@ -86,14 +104,5 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size
     ){
         return ResponseEntity.ok(postService.getPostsByCategory(categoryId, page,size));
-    }
-    @GetMapping("/my")
-    public ResponseEntity<Page<PostResponse>> getMyPosts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return ResponseEntity.ok(
-                postService.getMyPosts(page, size)
-        );
     }
 }

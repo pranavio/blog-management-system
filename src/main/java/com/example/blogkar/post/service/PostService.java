@@ -19,4 +19,6 @@ public interface PostService {
     PostResponse publishPost(Integer postId);
     PostResponse archivePost(Integer postId);
     Page<PostResponse> getMyDraftPosts(int page, int size);
+    Page<PostResponse> getMyPublishedPosts(int page, int size);
+    Page<PostResponse> getMyArchivedPosts(int page, int size);
 }

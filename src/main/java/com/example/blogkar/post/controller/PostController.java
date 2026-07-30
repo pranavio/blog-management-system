@@ -26,6 +26,25 @@ public class PostController {
                 postService.getMyDraftPosts(page, size)
         );
     }
+    @GetMapping("/my-published")
+    @PreAuthorize("hasAnyRole('AUTHOR','ADMIN')")
+    public ResponseEntity<Page<PostResponse>> getMyPublishedPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return ResponseEntity.ok(
+                postService.getMyPublishedPosts(page, size)
+        );
+    }
+    @GetMapping("my-archived")
+    @PreAuthorize("hasAnyRole('AUTHOR', 'ADMIN')")
+    public ResponseEntity<Page<PostResponse>> getMyArchivedPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        return ResponseEntity.ok(
+                postService.getMyArchivedPosts(page, size)
+        );
+    }
     @GetMapping("/my-posts")
     @PreAuthorize("hasAnyRole('AUTHOR','ADMIN')")
     public ResponseEntity<Page<PostResponse>> getMyPosts(

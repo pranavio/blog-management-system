@@ -95,6 +95,24 @@ public class PostServiceImpl implements PostService {
             Page<Post> posts = postRepository.findByUserAndStatus(user, PostStatus.DRAFT, pageable);
             return posts.map(postMapper::toResponse);
         };
+        @Override
+        public Page<PostResponse> getMyPublishedPosts(int page, int size){
+            Pageable pageable = PageRequest.of(page, size);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            User user = userDetails.getUser();
+            Page<Post> posts = postRepository.findByUserAndStatus(user, PostStatus.PUBLISHED, pageable);
+            return posts.map(postMapper::toResponse);
+        }
+        @Override
+        public Page<PostResponse> getMyArchivedPosts(int page, int size){
+            Pageable pageable = PageRequest.of(page, size);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            User user = userDetails.getUser();
+            Page<Post> posts = postRepository.findByUserAndStatus(user, PostStatus.ARCHIVED, pageable);
+            return  posts.map(postMapper::toResponse);
+        }
     @Override
     public Page<PostResponse> getPostsByCategory(Integer categoryId, int page, int size){
         if (!categoryRepository.existsById(categoryId)) {

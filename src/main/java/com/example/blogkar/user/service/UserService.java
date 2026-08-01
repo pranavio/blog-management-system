@@ -37,33 +37,8 @@ public class UserService {
         this.jwtService = jwtService;
 
     }
-    public UserResponse register(RegisterRequest request){
-        if(userRepository.existsByEmail(request.getEmail())){
-            throw new EmailAlreadyExistsException("Email already exists.");
-        }
-        User user = userMapper.toEntity(request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.USER);
-        User saveUser = userRepository.save(user);
-        UserResponse response = userMapper.toResponse(saveUser);
-        return response;
-    }
-    public LoginResponse login(LoginRequest request){
 
-        User user = userRepository.findByEmail(request.email()).orElseThrow(()->
-                new InvalidCredentialsException("Invalid email or password."));
-        if (!passwordEncoder.matches(
-                request.password(),
-                user.getPassword()
-        )){
-            throw new InvalidCredentialsException("Invalid email or password.");
-        }
-        String token = jwtService.generateToken(user);
-        return new LoginResponse(
-                token,
-                "Bearer"
-        );
-    }
+
     public UserProfileResponse getMyProfile(){
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();

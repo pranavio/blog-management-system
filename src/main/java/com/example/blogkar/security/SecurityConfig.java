@@ -67,14 +67,17 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/files/upload",
-                                "/uploads/**"
+                                "/uploads/**",
+
+                                // Swagger
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
                         ).permitAll()
 
-                        // Public APIs
                         .requestMatchers(HttpMethod.GET, "/api/posts/**")
                         .permitAll()
 
-                        // Everything else requires authentication
                         .anyRequest().authenticated()
                 )
 

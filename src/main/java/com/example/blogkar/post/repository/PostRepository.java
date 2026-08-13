@@ -15,4 +15,5 @@ public interface PostRepository extends JpaRepository<Post, Integer
     Page<Post> findByUser(User user, Pageable pageable);
     Page<Post> findByStatus(PostStatus status, Pageable pageable);
     Page<Post> findByUserAndStatus(User user, PostStatus status, Pageable pageable);
+    boolean existsByCategory_CategoryId(Integer categoryId);
 }

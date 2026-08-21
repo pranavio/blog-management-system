@@ -33,6 +33,7 @@ public class UserMapper {
         response.setRole(user.getRole());
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
+        response.setProfileImageUrl(user.getProfileImageUrl());
 
         return response;
     }

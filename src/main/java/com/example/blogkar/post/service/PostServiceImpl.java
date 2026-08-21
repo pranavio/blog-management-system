@@ -4,6 +4,7 @@ import ch.qos.logback.core.joran.spi.ActionException;
 import com.example.blogkar.category.entity.Category;
 import com.example.blogkar.category.repository.CategoryRepository;
 import com.example.blogkar.exception.ResourceNotFoundException;
+import com.example.blogkar.like.repository.LikeRepository;
 import com.example.blogkar.post.dto.CreatePostRequest;
 import com.example.blogkar.post.dto.PostResponse;
 import com.example.blogkar.post.entity.Post;
@@ -26,6 +27,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
 import com.example.blogkar.user.enums.Role;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
@@ -34,6 +40,51 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final PostMapper postMapper;
+    private final LikeRepository likeRepository;
+
+    @Override
+    public List<PostResponse> getTrendingPosts() {
+
+        LocalDateTime fromDate = LocalDateTime.now().minusDays(30);
+
+        List<Post> recentPosts =
+                postRepository.findByStatusAndDeletedAtIsNullAndCreatedAtAfter(
+                        PostStatus.PUBLISHED,
+                        fromDate
+                );
+
+        Map<Integer, Post> trendingByCategory = new HashMap<>();
+
+        for (Post post : recentPosts) {
+
+            Integer categoryId = post.getCategory().getCategoryId();
+
+            Post currentTrendingPost = trendingByCategory.get(categoryId);
+
+            if (currentTrendingPost == null) {
+                trendingByCategory.put(categoryId, post);
+                continue;
+            }
+
+            long currentLikes = likeRepository.countByPost(currentTrendingPost);
+            long postLikes = likeRepository.countByPost(post);
+
+            if (postLikes > currentLikes) {
+
+                trendingByCategory.put(categoryId, post);
+
+            } else if (postLikes == currentLikes &&
+                    post.getCreatedAt().isAfter(currentTrendingPost.getCreatedAt())) {
+
+                trendingByCategory.put(categoryId, post);
+            }
+        }
+
+        return trendingByCategory.values()
+                .stream()
+                .map(postMapper::toResponse)
+                .toList();
+    }
 
     @Override
     public PostResponse archivePost(Integer postId) {

@@ -44,6 +44,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
+
     @CreationTimestamp
     @Column(name="created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -90,6 +93,14 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getProfileImageUrl() {
+        return profileImageUrl;
+    }
+
+    public void setProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
     public void setPassword(String password) {

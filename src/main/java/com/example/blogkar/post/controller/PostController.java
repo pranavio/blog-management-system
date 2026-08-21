@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(
         name = "Post Management",
         description = "APIs for creating, updating, publishing, archiving, searching, and retrieving blog posts."
@@ -22,6 +24,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
+    @GetMapping("/trending")
+    public ResponseEntity<List<PostResponse>> getTrendingPosts() {
+        return ResponseEntity.ok(postService.getTrendingPosts());
+    }
     @GetMapping("/my-drafts")
     @PreAuthorize("hasAnyRole('AUTHOR','ADMIN')")
     public ResponseEntity<Page<PostResponse>> getMyDraftPosts(

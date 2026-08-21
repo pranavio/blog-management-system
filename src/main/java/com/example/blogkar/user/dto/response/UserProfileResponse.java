@@ -22,4 +22,6 @@ public class UserProfileResponse {
 
     private LocalDateTime updatedAt;
 
+    private String profileImageUrl;
+
 }

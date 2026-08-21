@@ -5,6 +5,8 @@ import com.example.blogkar.post.dto.PostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 
 public interface PostService {
 
@@ -21,4 +23,5 @@ public interface PostService {
     Page<PostResponse> getMyDraftPosts(int page, int size);
     Page<PostResponse> getMyPublishedPosts(int page, int size);
     Page<PostResponse> getMyArchivedPosts(int page, int size);
+    List<PostResponse> getTrendingPosts();
 }
